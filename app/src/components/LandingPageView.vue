@@ -1,28 +1,47 @@
 <style scoped>
-  img {
-    margin-top: -25px;
-    width: 450px;
+  .list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    list-style-type: none;
+    justify-content: space-between;
   }
 </style>
 
 <template>
   <div>
-    <img src="./LandingPageView/assets/logo.png" alt="electron-vue">
-    <h1>Welcome.</h1>
-    <versions></versions>
-    <links></links>
+
+
+
+
+<ul class="list">
+  <pocket-item v-for="item in sharedState.pocketList"
+    :item="item">
+  </pocket-item>
+</ul>
+
   </div>
 </template>
 
 <script>
   import Links from './LandingPageView/Links'
   import Versions from './LandingPageView/Versions'
+  import {store} from '../api'
+  import PocketItem from './LandingPageView/PocketItem'
 
   export default {
     components: {
       Links,
-      Versions
+      Versions,
+      PocketItem
     },
+
+    data () {
+      return {
+        sharedState: store.state
+      }
+    },
+
     name: 'landing-page'
   }
 </script>
