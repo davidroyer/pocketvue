@@ -1,0 +1,15 @@
+{
+  "name": "pocketvue",
+  "version": "0.0.0",
+  "description": "An electron-vue project",
+  "main": "electron.js",
+  "dependencies": {
+    "article-extractor": "^1.0.2",
+    "lodash": "^4.16.4",
+    "vue": "^2.0.1",
+    "vue-electron": "^1.0.0",
+    "vue-resource": "^1.0.3"
+  },
+  "devDependencies": {},
+  "author": "David Royer <droyer01@gmail.com>"
+}
