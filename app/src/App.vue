@@ -1,6 +1,6 @@
 <style>
-  @import url(https://fonts.googleapis.com/css?family=Lato:300);
-
+  /*@import url(https://fonts.googleapis.com/css?family=Lato:300);*/
+  @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,600,600i,700|Roboto:300,400,400i,500)
   * {
     margin: 0;
     padding: 0;
@@ -26,6 +26,7 @@
 </style>
 
 <template>
+
   <div>
     <landing-page></landing-page>
   </div>

@@ -12,8 +12,8 @@ var customActions = {
 
 const Pocket = Vue.resource('get', {}, customActions);
 const articles = Vue.resource('get')
-const add = Vue.resource('add')
-const modify = Vue.resource('send')
+const addArticle = Vue.resource('add')
+const Modify = Vue.resource('send')
 
 const key = '58661-bde889e092272515b109406c'
 const accessToken = '430fdb01-0bb5-c3de-6e4c-f42005'
@@ -25,9 +25,26 @@ export const store = {
   },
 
   fetchList: function () {
-    console.log('running fetchList');
-    Pocket.getList({ consumer_key: key, access_token: accessToken, count: "400", detailType: "complete" }).then((response) => {
+
+    Pocket.getList({ consumer_key: key, access_token: accessToken, count: "40", detailType: "complete" }).then((response) => {
       this.state.pocketList = response.data.list
+    })
+  },
+  addTags: function () {
+    const modify = 'https://getpocket.com/v3/send'
+
+
+    let actions = [ { action: 'tags_add', tags: 'addedfromPocket', item_id: '1435741427' } ]
+    actions = JSON.stringify(actions)
+
+    // Vue.
+
+    Vue.http.post(modify, { actions, consumer_key: key, access_token: accessToken }).then((response) => {
+
+      console.log(response)
+
+    }, (response) => {
+    // error callback
     })
   }
 }

@@ -1,9 +1,9 @@
 <template lang="html">
 
   <li class="item">
-    <a :href="item.resolved_url" target="_blank">
-      {{item.resolved_title}}
-    </a>
+    <!-- <a :href="item.resolved_url" target="_blank"> -->
+      <div class="item_title">{{item.resolved_title}}</div>
+    <!-- </a> -->
     <ul class="tag_list" v-if="typeof item.tags === 'object' ">
       <!-- <li v-for="tag in item.tags">
         {{tag.tag}}
@@ -42,6 +42,14 @@ export default {
     background-color: #f9f9f9;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
     flex: 1;
+    cursor: pointer;
+    transition: background-color .3s ease;
+    padding: 1em;
+    position: relative;
+
+    &:hover {
+      background-color: #e1e1e1;
+    }
 
     & > a {
       display: block;
@@ -59,9 +67,21 @@ export default {
   }
 
   .tag {
+    margin-top: 5px;
+
 
     &_list {
       margin-top: 5px;
+      position: absolute;
+      top: 100%;
+      padding-left: 0;
+    }
+
+    & label {
+
+      &:hover {
+        background: #636363;
+      }
     }
   }
 </style>

@@ -8,7 +8,8 @@
     "lodash": "^4.16.4",
     "vue": "^2.0.1",
     "vue-electron": "^1.0.0",
-    "vue-resource": "^1.0.3"
+    "vue-resource": "^1.0.3",
+    "wysiwyg.css": "0.0.2"
   },
   "devDependencies": {},
   "author": "David Royer <droyer01@gmail.com>"
