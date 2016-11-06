@@ -16,55 +16,34 @@
 
     <ul class="list">
       <pocket-item v-for="item in testFilterByTag"
-        v-on:articleUrlSelected="testRemoteWindow"
+        @articleUrlSelected="testRemoteWindow"
         :item="item">
       </pocket-item>
     </ul>
 
-    <div class="article__wrapper " v-show="showArticle">
-
-      <!-- <md-button type="button" class="md-primary md-raised" name="button" @click="toggleArticleViewer">Close Article</md-button> -->
+    <!-- <div class="article__wrapper " v-show="showArticle">
       <md-button class="md-icon-button close-article md-raised md-accent" @click="toggleArticleViewer">
         <md-icon>arrow_back</md-icon>
       </md-button>
-      <!-- <div v-html="currentArticle.content"></div> -->
       <webview id="articleFrame" src="https://www.github.com/" style="display:inline-flex; width:inherit; height:inherit" ></webview>
+    </div> -->
 
-    </div>
   </div>
 </template>
 
 <script>
   const {BrowserWindow, screen} = require('electron').remote
   const {webContents} = require('electron').remote
-  import Links from './LandingPageView/Links'
-  import Versions from './LandingPageView/Versions'
+
   import {store} from '../api'
   import PocketItem from './LandingPageView/PocketItem'
-  var extractor = require('article-extractor');
-  require('../../node_modules/wysiwyg.css/wysiwyg.css')
   var request = require('request')
 
   import _ from 'lodash'
   const electron = require('electron')
-  let displays = screen.getAllDisplays()
-  console.log(displays);
-  // var winOptions = { width: 600,
-  //                  height: 800,
-  //                  show: false,
-  //                  x: 1440 - 600,
-  //                  y: 0,
-  //                  webPreferences: {
-  //                      nodeIntegration: false,
-  //                      webSecurity: false
-  //                  }
-  //              };
-  // const remoteViewer = new BrowserWindow(winOptions)
-  // testWindow = new BrowserWindow(winOptions);
+
   export default {
     components: {
-      Links,
-      Versions,
       PocketItem
     },
 
@@ -120,20 +99,6 @@
         // return _.findKey(list, ['has_video', '0']);
       },
 
-      newestTest: function () {
-        var pocketList =  this.sharedState.pocketList
-        var arrayOfObjectsWithDuplicateTags =  _.filter(pocketList, function(item) {
-          // return _.includes(item.tags, 'vue');
-          return _.get(item, 'tags');
-
-        })
-
-
-        var uniqueItems = _.uniq(arrayOfObjectsWithDuplicateTags, function(o){ return o.tags; });
-        console.log(uniqueItems);
-        return uniqueItems
-      },
-
       testFilterByTag: function () {
 
         var pocketList = this.sharedState.pocketList
@@ -149,17 +114,7 @@
         } else {
           return pocketList
         }
-        // return  _.forEach(itemsWithTags, function(value, key) {
-        //     _.forEach(value.tags, function(value, key) {
-        //       return key.item_id
-        //     })
-        //
-        // })
-        //
-        // return _.filter(itemsWithTags, function(item) {
-        //     return _.hasIn(itemsWithTags, 'item.tags.tag1')
-        //
-        // })
+
       },
 
       testFilterByMultipleTags: function (tagToFilterBy) {
@@ -167,53 +122,19 @@
         var pocketList = this.sharedState.pocketList
         var filterByThese = ['tags.vue', 'tags.electron']
 
-      var arrayofArrays =  _.map(filterByThese, function(tag) {
-        return _.filter(pocketList, function(item) {
-          return _.has(item, tag)
-        })
-      })
-
-      return _.reduce(arrayofArrays, function(flattened, other) {
-        return _.uniq(flattened.concat(other));
-      }, []);
-
-        // return _.filter(pocketList, function(item) {
-        //   return _.has(item,'tags.vue') && _.has(item,'tags.electron') ;
-        //
-        // })
-
-        let result1 =
-        _.filter(pocketList, function(item) {
-          return _.has(item, filterByThese[0]);
-          // return _.has(item, 'tags.vue');
-          // return _.has(item, ['tags.vue']);
+        var arrayofArrays =  _.map(filterByThese, function(tag) {
+          return _.filter(pocketList, function(item) {
+            return _.has(item, tag)
+          })
         })
 
-        result1 +=
-        _.filter(pocketList, function(item) {
-          return _.has(item, filterByThese[1]);
-          // return _.has(item, 'tags.vue');
-          // return _.has(item, ['tags.vue']);
-        })
-
-
-        // return result1
-        console.log(result1);
-      // return _.union(result1, result2)
-
-
-
-        // return _.forEach(filterByThese, function(value) {
-        //   return value
-        // });
-        //
-
+        return _.reduce(arrayofArrays, function(flattened, other) {
+          return _.uniq(flattened.concat(other));
+        }, []);
       }
     },
 
     methods: {
-      goToUrl: () => {
-      },
 
       prepareRemoteWindow: function () {
         const BrowserWindow = this.$electron.remote.BrowserWindow
@@ -231,10 +152,8 @@
       },
 
       testRemoteWindow: function (url) {
-
         this.win.loadURL(url);
         this.win.show();
-
       },
 
       getFocusedWebContents: function () {
@@ -251,17 +170,6 @@
 
       toggleLeftSidenav() {
         this.$refs.leftSidenav.toggle();
-      },
-
-      filterPocketList: function (tagToFilterBy) {
-        var pocketList = this.sharedState.pocketList
-
-        var filterItem = 'tags.' + tagToFilterBy
-        var result = _.filter(pocketList, function(item) {
-          // return _.includes(item.tags, 'vue');
-          return _.has(item, filterItem);
-
-        })
       },
 
       getArticleContent: function (url) {

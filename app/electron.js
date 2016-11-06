@@ -44,20 +44,6 @@ function createWindow () {
   mainWindow.on('closed', () => {
     mainWindow = null
   })
-
-
-
-  var winOptions = { width: 600,
-                     height: 800,
-                     show: false,
-                     nodeIntegration: false,
-                     webPreferences: {
-                         webSecurity: false
-                     }
-                 };
-  var authWindow = new BrowserWindow(winOptions);
-  authWindow.loadURL(authUrl);
-  authWindow.show();
 }
 
 app.on('ready', createWindow)
