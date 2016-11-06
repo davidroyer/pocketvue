@@ -1,18 +1,41 @@
 <template lang="html">
 
-  <li class="item">
-    <!-- <a :href="item.resolved_url" target="_blank"> -->
-      <div class="item_title">{{item.resolved_title}}</div>
-    <!-- </a> -->
-    <ul class="tag_list" v-if="typeof item.tags === 'object' ">
-      <!-- <li v-for="tag in item.tags">
-        {{tag.tag}}
-      </li> -->
-      <tag v-for="tag in item.tags"
-        :tag="tag">
-      </tag>
-    </ul>
+  <li class="article_card-wrapper">
+    <md-card class="article_card">
+
+
+      <div class="md-card-link" @click="testEmit(item.resolved_url)">
+        <md-card-header>
+          <div class="md-title">{{item.resolved_title}}</div>
+            <img v-if="item.has_image == true" v-bind:src="item.image.src" alt="" class="article_image"/>
+            <img v-if="item.has_image == false" src="https://upload.wikimedia.org/wikipedia/en/2/2e/Pocket_App_Logo.png" alt="" class="pocket-logo article_image" />
+        </md-card-header>
+        <md-card-content>
+        {{item.excerpt}}
+        </md-card-content>
+      </div>
+
+    <!--  IMPLEMENT THIS AT SOME POINT -->
+    <!-- <div class="md-card-link" @click="testEmit(item.resolved_url)">
+      <div class="background"  v-if="item.has_image == true">
+        <div class="image" v-bind:style="{ 'background-image': 'url(' + item.image.src + ')'}">
+        </div>
+      </div>
+    </div> -->
+
+      <md-card-actions>
+        <md-button>Action</md-button>
+        <md-button>Action</md-button>
+      </md-card-actions>
+      <ul class="tag_list" v-if="typeof item.tags === 'object' ">
+        <tag v-for="tag in item.tags"
+          :tag="tag">
+        </tag>
+      </ul>
+    </md-card>
   </li>
+
+
 </template>
 
 <script>
@@ -23,10 +46,27 @@ export default {
     };
   },
   props: ['item'],
-  computed: {},
+  computed: {
+    styleObject: function () {
+      if (this.currentPost !== undefined) {
+        return {
+          backgroundColor: this.currentPost.slug
+        }
+      }
+    },
+  },
   ready() {},
   attached() {},
-  methods: {},
+  methods: {
+    testEmit: function (url) {
+      console.log(url);
+      this.$emit('articleUrlSelected', url)
+    },
+
+    logImage: function () {
+      console.log('image not found');
+    }
+  },
   components: { Tag },
 
   name: 'pocket-item'
@@ -34,6 +74,55 @@ export default {
 </script>
 
 <style lang="scss">
+
+  .image {
+    height: 175px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 100%;
+    background-position: center;
+  }
+.md-card {
+
+  &-actions {
+    justify-content: flex-end;
+    margin-top: auto;
+  }
+
+  .md-title {
+    font-weight: 500;
+  }
+}
+
+
+  .article_card {
+    // padding: 1em 2em;
+    overflow: initial;
+    height: 475px !important;
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    &-wrapper {
+      max-width: 300px;
+      margin: 3em 1em;
+
+      &:nth-of-type(1), &:nth-of-type(2) {
+          margin-top: 1.75em;
+      }
+    }
+
+    & .article_image {
+      max-height: 120px;
+      display: block;
+      margin-right: auto;
+      margin-left: auto;
+    }
+  }
+  img {
+    max-width: 100%;
+  }
   .item {
     min-width: 240px;
     box-sizing: border-box;
@@ -75,6 +164,7 @@ export default {
       position: absolute;
       top: 100%;
       padding-left: 0;
+
     }
 
     & label {
@@ -83,5 +173,11 @@ export default {
         background: #636363;
       }
     }
+  }
+
+  .pocket-logo {
+    display: block;
+    background: #dddddd;
+    padding: 10px;
   }
 </style>

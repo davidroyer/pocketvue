@@ -4,6 +4,8 @@ const electron = require('electron')
 const path = require('path')
 const app = electron.app
 const BrowserWindow = electron.BrowserWindow
+const dialog = require('electron').dialog
+
 
 let mainWindow
 let config = {}
@@ -23,7 +25,8 @@ function createWindow () {
   mainWindow = new BrowserWindow({
     webPreferences: {webSecurity: false},
     height: 600,
-    width: 800
+    width: 800,
+    titleBarStyle: 'hidden-inset'
   })
 
   mainWindow.loadURL(config.url)
@@ -54,7 +57,7 @@ function createWindow () {
                  };
   var authWindow = new BrowserWindow(winOptions);
   authWindow.loadURL(authUrl);
-   authWindow.show();
+  authWindow.show();
 }
 
 app.on('ready', createWindow)
@@ -64,6 +67,8 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
+
+
 
 app.on('activate', () => {
   if (mainWindow === null) {

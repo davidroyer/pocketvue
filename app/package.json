@@ -5,12 +5,20 @@
   "main": "electron.js",
   "dependencies": {
     "article-extractor": "^1.0.2",
+    "electron-config": "^0.2.1",
+    "electron-data": "^1.2.0",
     "lodash": "^4.16.4",
+    "material-design-icons": "^3.0.1",
+    "request": "^2.76.0",
+    "titlebar": "^1.4.0",
     "vue": "^2.0.1",
     "vue-electron": "^1.0.0",
+    "vue-material": "^0.2.0",
     "vue-resource": "^1.0.3",
     "wysiwyg.css": "0.0.2"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "vue-resource": "^1.0.3"
+  },
   "author": "David Royer <droyer01@gmail.com>"
 }
