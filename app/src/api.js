@@ -16,8 +16,8 @@ const addArticle = Vue.resource('add')
 const Modify = Vue.resource('send')
 
 const key = '58661-bde889e092272515b109406c'
-const redirectURL = "http://google.com"
-
+const redirectURL = "https://google.com"
+// pocketvue://authorizationFinished
 
 export const store = {
   state: {
@@ -27,7 +27,9 @@ export const store = {
 		hasAccessToken: true,
     isAuthorized: false,
 		loggedIn: false,
-    view: 'Login'
+    view: 'Login',
+    showWebView: false,
+    webViewUrl: null
   },
 
   setLocalStorageConfig: function () {
@@ -96,12 +98,14 @@ export const store = {
 		localStorage.setItem('requestToken', code);
 
 		var url = 'https://getpocket.com/auth/authorize?request_token='+code+'&redirect_uri='+redirectURL
-		window.open(url);
+    this.state.webViewUrl = url
+    this.state.showWebView = true
+		// window.open(url);
 
 	},
 
   runGetAccessToken: function () {
-    
+
     let state = this.state
     if (localStorage.currentUserAccessToken !== undefined) {
       state.loggedIn = true
@@ -118,10 +122,10 @@ export const store = {
       request.post(options, function (error, response, body) {
 
   			var body = JSON.parse(body)
-  			var usersArray =  JSON.parse(localStorage.getItem('users'))
-  			var user = {username: body.username, access_token: body.access_token}
-  			usersArray.push(user)
-        console.log(body.access_token);
+  			// var usersArray =  JSON.parse(localStorage.getItem('users'))
+  			// var user = {username: body.username, access_token: body.access_token}
+  			// usersArray.push(user)
+        // console.log(body.access_token);
 
   			localStorage.setItem( 'currentUserAccessToken', body.access_token)
         state.loggedIn = true

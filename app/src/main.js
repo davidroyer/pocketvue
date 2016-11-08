@@ -7,6 +7,8 @@ import 'vue-material/dist/vue-material.css'
 require('../node_modules/material-design-icons/iconfont/material-icons.css')
 var bus = new Vue()
 
+
+console.log(bus);
 Vue.use(VueMaterial)
 Vue.material.theme.register('default', {
   primary: 'indigo',

@@ -5,6 +5,10 @@
       <md-button id="authorize-app" v-if="!sharedState.isAuthorized" class="md-raised md-accent" @click="authorizeApp">Connect PocketVue To Your Account</md-button>
       <md-button id="get-token" class="md-raised md-accent" @click="newLoginMethod">Login</md-button>
     </div>
+<!--
+    <webview id="test" src="https://www.github.com/" style="display:inline-flex; width:100%; height:100vh" disablewebsecurity ></webview> -->
+
+    <webview v-show="sharedState.showWebView" id="pocket-test" :src="sharedState.webViewUrl" disablewebsecurity style="display:inline-flex; width:100%; height:100vh" ></webview>
   </div>
 </template>
 
@@ -22,9 +26,10 @@ export default {
   },
 
   mounted: function () {
-    this.getUsers()
     store.setLocalStorageConfig()
     this.checkUserAuthorized()
+    this.getPocketViewInfo()
+
   },
 
   methods: {
@@ -36,6 +41,17 @@ export default {
       // this.sharedState.authCode === 'true'
     },
 
+    getPocketViewInfo: function () {
+      const pocketWebview = document.getElementById('pocket-test')
+      var vm = this
+
+      pocketWebview.addEventListener('did-get-redirect-request', (event, oldURL, newURL) => {
+        if (event.newURL == 'https://google.com/') {
+          alert('You can login now')
+          vm.sharedState.showWebView = false
+        }
+      })
+    },
 
     loginUsingView: function () {
       this.$emit('userLoggingIn')
@@ -47,10 +63,6 @@ export default {
         } else {
           this.sharedState.isAuthorized = true
         }
-    },
-
-    getUsers: function () {
-      store.getUsers()
     },
 
     authorizeApp: function () {

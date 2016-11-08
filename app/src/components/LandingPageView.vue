@@ -11,6 +11,12 @@
         <label>{{tag}}
           <input type="radio" name="filterValue" :value="tag" v-model="valueToFilterBy">
         </label>
+        <!-- <label class="cursor">
+          <md-switch v-model="checkedArray" :value="tag" :id="tag" :name="tag"></md-switch>
+          {{tag}}
+        </label> -->
+        <!-- <input type="checkbox" :id="tag" :value="tag" v-model="checkedArray" :name="tag">
+        <label :for="tag">{{tag}}</label> -->
       </div>
     </div>
 
@@ -21,12 +27,12 @@
       </pocket-item>
     </ul>
 
-    <!-- <div class="article__wrapper " v-show="showArticle">
+    <div class="article__wrapper " v-show="showArticle">
       <md-button class="md-icon-button close-article md-raised md-accent" @click="toggleArticleViewer">
         <md-icon>arrow_back</md-icon>
+            <webview id="articleFrame" src="https://www.github.com/" style="display:inline-flex; width:inherit; height:inherit" ></webview>
       </md-button>
-      <webview id="articleFrame" src="https://www.github.com/" style="display:inline-flex; width:inherit; height:inherit" ></webview>
-    </div> -->
+    </div>
 
   </div>
 </template>
@@ -42,6 +48,7 @@
   import _ from 'lodash'
   const electron = require('electron')
 
+
   export default {
     components: {
       PocketItem
@@ -53,8 +60,11 @@
         showArticle: false,
         currentArticle: null,
         valueToFilterBy: 'all',
-        testWindow: null,
-        win: null
+        testWindow: this.$electron.remote.BrowserWindow,
+        articleView: null,
+        checkedArray: [],
+        mdCheckbox: null
+
       }
     },
 
@@ -64,6 +74,7 @@
 
     mounted () {
       this.prepareRemoteWindow()
+      // this.watchForClosedArticleView()
     },
 
     computed: {
@@ -120,7 +131,12 @@
       testFilterByMultipleTags: function (tagToFilterBy) {
 
         var pocketList = this.sharedState.pocketList
-        var filterByThese = ['tags.vue', 'tags.electron']
+
+        function addTags(tag) {
+          return 'tags.'+tag;
+        }
+
+        var filterByThese = _.map(this.checkedArray, addTags)
 
         var arrayofArrays =  _.map(filterByThese, function(tag) {
           return _.filter(pocketList, function(item) {
@@ -137,7 +153,8 @@
     methods: {
 
       prepareRemoteWindow: function () {
-        const BrowserWindow = this.$electron.remote.BrowserWindow
+        let ArticleWindow = this.testWindow
+        // let ArticleWindow = this.$electron.remote.BrowserWindow
         var winOptions = { width: 600,
                          height: 800,
                          show: false,
@@ -148,12 +165,31 @@
                              webSecurity: false
                          }
                      };
-        this.win = new BrowserWindow(winOptions)
+        this.articleView = new ArticleWindow(winOptions)
       },
 
       testRemoteWindow: function (url) {
-        this.win.loadURL(url);
-        this.win.show();
+        if (this.articleView === null) {
+          this.prepareRemoteWindow()
+          this.articleView.loadURL(url);
+          this.articleView.show();
+        } else {
+          this.articleView.loadURL(url);
+          this.articleView.show();
+        }
+
+      },
+
+      watchForClosedArticleView: function () {
+        var vm = this
+        // console.log(vm.articleView);
+        let windowToHide = vm.articleView
+      console.log(windowToHide);
+        // vm.articleView.on('close', function(event) {
+        //   windowToHide.hide();
+        //   event.preventDefault();
+        //
+        // });
       },
 
       getFocusedWebContents: function () {
@@ -217,6 +253,9 @@
 </script>
 
 <style lang="scss" scoped>
+  .md-switch, .cursor {
+    cursor: pointer;
+  }
   .list {
     display: inline-flex;
     // width: 70%;
