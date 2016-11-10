@@ -19,11 +19,21 @@ const key = '58661-bde889e092272515b109406c'
 const redirectURL = "https://google.com"
 // pocketvue://authorizationFinished
 
+
+const Store = require('../store.js')
+
+const configStore = new Store({
+  configName: 'user-settings',
+})
+
+console.log(configStore.get('accessToken'));
+
 export const store = {
   state: {
     pocketList: null,
 		users: null,
     authCode: null,
+    hasRequestToken: null,
 		hasAccessToken: true,
     isAuthorized: false,
 		loggedIn: false,
@@ -32,24 +42,15 @@ export const store = {
     webViewUrl: null
   },
 
-  setLocalStorageConfig: function () {
-    if (localStorage.userIsAuthorized === undefined) {
-      localStorage.setItem('userIsAuthorized', false)
+	checkForAccessToken: function () {
+
+    if (configStore.get('accessToken') !== null) {
+      console.log('check ran');
+      this.state.isAuthorized = true
+      this.state.loggedIn = true
+      this.state.view = 'LandingPage'
     }
-  },
 
-	getUsers: function () {
-		this.state.users = JSON.parse(localStorage.getItem('users'))
-	},
-
-	checkForAccessToken: () => {
-			var result = localStorage.accessToken !== undefined ? 'We have token' : 'We have undefined'
-			console.log(result);
-		if (localStorage.accessToken !== undefined) {
-
-		} else {
-
-		}
 	},
 
 	fetchList: function () {
@@ -96,7 +97,7 @@ export const store = {
 	userAuthorizationApproval: function (code) {
 		// console.log('ran in callback', code);
 		localStorage.setItem('requestToken', code);
-
+    configStore.set('requestToken', code);
 		var url = 'https://getpocket.com/auth/authorize?request_token='+code+'&redirect_uri='+redirectURL
     this.state.webViewUrl = url
     this.state.showWebView = true
@@ -107,12 +108,13 @@ export const store = {
   runGetAccessToken: function () {
 
     let state = this.state
-    if (localStorage.currentUserAccessToken !== undefined) {
+    if (configStore.get('accessToken') !== null) {
+      state.isAuthorized = true
       state.loggedIn = true
       state.view = 'LandingPage'
 
     } else {
-      var requestToken = localStorage.getItem('requestToken')
+      var requestToken = configStore.get('requestToken')
       var options = {
         headers: config.headers,
         url: config.pocketUrl.authorize,
@@ -122,12 +124,8 @@ export const store = {
       request.post(options, function (error, response, body) {
 
   			var body = JSON.parse(body)
-  			// var usersArray =  JSON.parse(localStorage.getItem('users'))
-  			// var user = {username: body.username, access_token: body.access_token}
-  			// usersArray.push(user)
-        // console.log(body.access_token);
-
-  			localStorage.setItem( 'currentUserAccessToken', body.access_token)
+        configStore.set('accessToken',  body.access_token)
+        state.isAuthorized = true
         state.loggedIn = true
         state.view = 'LandingPage'
       });
@@ -136,7 +134,7 @@ export const store = {
   },
 
 	fetchPostsFromUserToken: function() {
-		var accessToken = localStorage.getItem('currentUserAccessToken');
+		var accessToken = configStore.get('accessToken')
 
 		Pocket.getList({ consumer_key: key, access_token: accessToken, count: "150", detailType: "complete" }).then((response) => {
       this.state.pocketList = response.data.list
@@ -148,5 +146,18 @@ export const store = {
 		Pocket.getList({ consumer_key: key, access_token: accessToken, count: "150", detailType: "complete" }).then((response) => {
 			this.state.pocketList = response.data.list
 		})
-	}
+	},
+
+  resetConfig: function () {
+
+    configStore.nullify('accessToken')
+    configStore.nullify('requestToken')
+
+    this.state.isAuthorized = false
+    this.state.loggedIn = false
+  },
+
+  hasRequestToken: function () {
+    this.state.hasRequestToken = true
+  }
 }

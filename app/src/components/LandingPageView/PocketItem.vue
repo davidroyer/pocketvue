@@ -1,6 +1,6 @@
 <template lang="html">
 
-  <li class="article_card-wrapper">
+  <li class="article_card-wrapper list-complete-item">
     <md-card class="article_card">
 
 
@@ -27,11 +27,11 @@
         <md-button>Action</md-button>
         <md-button>Action</md-button>
       </md-card-actions>
-      <ul class="tag_list" v-if="typeof item.tags === 'object' ">
+      <!-- <ul class="tag_list" v-if="typeof item.tags === 'object' ">
         <tag v-for="tag in item.tags"
           :tag="tag">
         </tag>
-      </ul>
+      </ul> -->
     </md-card>
   </li>
 
@@ -106,10 +106,10 @@ export default {
 
     &-wrapper {
       max-width: 300px;
-      margin: 3em 1em;
+      // margin: 3em 1em;
 
       &:nth-of-type(1), &:nth-of-type(2) {
-          margin-top: 1.75em;
+          // margin-top: 1.75em;
       }
     }
 

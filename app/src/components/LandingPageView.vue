@@ -3,6 +3,7 @@
 
     <div class="tag-list">
       <div class="tag-list_wrapper">
+        <button v-on:click="shuffle">Shuffle</button>
         <label>All My Items
           <input type="radio" name="filterValue" value="all" v-model="valueToFilterBy">
         </label>
@@ -20,12 +21,27 @@
       </div>
     </div>
 
-    <ul class="list">
+    <!-- <transition-group name="flip-list" tag="ul">
+      <pocket-item v-for="item in this.sharedState.pocketList"
+        @articleUrlSelected="testRemoteWindow"
+        :item="item"
+        :key="item.item_id">
+      </pocket-item>
+    </transition-group> -->
+
+    <transition-group name="list-complete" tag="ul">
+      <pocket-item v-for="item in testFilterByTag"
+        @articleUrlSelected="testRemoteWindow"
+        :item="item"
+        :key="item.item_id">
+      </pocket-item>
+    </transition-group>
+    <!-- <ul class="list">
       <pocket-item v-for="item in testFilterByTag"
         @articleUrlSelected="testRemoteWindow"
         :item="item">
       </pocket-item>
-    </ul>
+    </ul> -->
 
     <div class="article__wrapper " v-show="showArticle">
       <md-button class="md-icon-button close-article md-raised md-accent" @click="toggleArticleViewer">
@@ -38,8 +54,7 @@
 </template>
 
 <script>
-  const {BrowserWindow, screen} = require('electron').remote
-  const {webContents} = require('electron').remote
+  const {BrowserWindow, screen, webContents} = require('electron').remote
 
   import {store} from '../api'
   import PocketItem from './LandingPageView/PocketItem'
@@ -47,6 +62,8 @@
 
   import _ from 'lodash'
   const electron = require('electron')
+
+  // const electronApp = electron.remote.app
 
 
   export default {
@@ -152,6 +169,11 @@
 
     methods: {
 
+      shuffle: function () {
+
+        this.sharedState.pocketList = _.shuffle(this.sharedState.pocketList)
+      },
+
       prepareRemoteWindow: function () {
         let ArticleWindow = this.testWindow
         // let ArticleWindow = this.$electron.remote.BrowserWindow
@@ -252,11 +274,32 @@
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+
+.flip-list-move {
+  transition: transform 1s;
+}
+
+.list-complete-item {
+  transition: all 1.3s ease;
+  // display: inline-block;
+  // margin-right: 10px;
+  margin: 3em 1em;
+}
+.list-complete-enter, .list-complete-leave-active {
+  opacity: 0;
+  transform: translateY(30px);
+}
+.list-complete-leave-active {
+  position: absolute;
+  transition: all .6s ease;
+}
+
+
   .md-switch, .cursor {
     cursor: pointer;
   }
-  .list {
+  .list, ul {
     display: inline-flex;
     // width: 70%;
     left: 250px;

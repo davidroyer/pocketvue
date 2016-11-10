@@ -129,10 +129,12 @@ import _ from 'lodash'
 
     created: function () {
       // store.fetchMyList();
+
     },
 
-    mounted () {
+    mounted: function () {
       // this.appTags()
+      store.checkForAccessToken()
     },
 
     computed: {

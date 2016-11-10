@@ -8,7 +8,6 @@ require('../node_modules/material-design-icons/iconfont/material-icons.css')
 var bus = new Vue()
 
 
-console.log(bus);
 Vue.use(VueMaterial)
 Vue.material.theme.register('default', {
   primary: 'indigo',
@@ -32,12 +31,18 @@ new Vue({
 
   created () {
 
-    store.checkForAccessToken()
-
   },
 
-  mounted () {
+  methods: {
+    runTokenCheck: function () {
+      console.log('hi');
+      store.checkForAccessToken()
+    }
+  },
+
+  mounted: function () {
     store.setLocalStorageConfig()
+    this.runTokenCheck()
   },
 
   ...App

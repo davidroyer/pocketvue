@@ -18,26 +18,42 @@ if (process.env.NODE_ENV === 'development') {
   config.url = `file://${__dirname}/dist/index.html`
 }
 
+const settings = require('electron-settings');
 
+settings.set('userSettings', {
+  accessToken: '123',
+  userName: 'PocketUser1'
+}).then(() => {
+  settings.get('userSettings.accessToken').then(val => {
+    console.log(val);
+    // => "Cosmo"
+  });
+});
+
+
+console.log(settings.getSettingsFilePath());
 // First instantiate the class
 const store = new Store({
   // We'll call our data file 'user-preferences'
-  configName: 'user-preferences',
+  configName: 'user-settings',
   defaults: {
     // 800x600 is the default size of our window
-    windowBounds: { width: 1200, height: 400 }
+    requestToken: null,
+    accessToken: null,
+    loggedIn: false
   }
 });
+
 
 function createWindow () {
   /**
    * Initial window options
    */
-  let { width, height } = store.get('windowBounds');
+  
   mainWindow = new BrowserWindow({
     webPreferences: {webSecurity: false},
-    height: height,
-    width: width,
+    height: 600,
+    width: 800,
     titleBarStyle: 'hidden-inset'
   })
 
@@ -60,9 +76,9 @@ function createWindow () {
   mainWindow.on('resize', () => {
     // The event doesn't pass us the window size, so we call the `getBounds` method which returns an object with
     // the height, width, and x and y coordinates.
-    let { width, height } = mainWindow.getBounds();
+    // let { width, height } = mainWindow.getBounds();
     // Now that we have them, save them using the `set` method.
-    store.set('windowBounds', { width, height });
+    // store.set('windowBounds', { width, height });
   });
 }
 
