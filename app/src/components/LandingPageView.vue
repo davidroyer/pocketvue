@@ -47,8 +47,8 @@
 </template>
 
 <script>
-  const {BrowserWindow, screen, webContents} = require('electron').remote
-
+  const {BrowserWindow, screen, webContents, dialog} = require('electron').remote
+  const path = require('path')
   import {store} from '../api'
   import PocketItem from './LandingPageView/PocketItem'
   var request = require('request')
@@ -56,7 +56,6 @@
   import _ from 'lodash'
   const electron = require('electron')
   import bus from '../bus'
-
 
 
   export default {
@@ -80,17 +79,10 @@
 
     created () {
       this.getList()
-      bus.$on('articleUrlSelected', function () {
-        alert('bus worked from APP Created')
-      }.bind(this))
+
     },
 
     mounted: function () {
-      this.prepareRemoteWindow()
-      bus.$on('articleUrlSelected', function () {
-        alert('bus worked from APP Mounted')
-      }.bind(this))
-      // this.watchForClosedArticleView()
     },
 
     computed: {
@@ -168,44 +160,9 @@
 
     methods: {
 
-      prepareRemoteWindow: function () {
-        let ArticleWindow = this.testWindow
-        // let ArticleWindow = this.$electron.remote.BrowserWindow
-        var winOptions = { width: 600,
-                         height: 800,
-                         show: false,
-                         x: 1440 - 600,
-                         y: 0,
-                         webPreferences: {
-                             nodeIntegration: false,
-                             webSecurity: false
-                         }
-                     };
-        this.articleView = new ArticleWindow(winOptions)
-      },
-
       launchArticleView: function (url) {
-        if (this.articleView === null) {
-          this.prepareRemoteWindow()
-          this.articleView.loadURL(url);
-          this.articleView.show();
-        } else {
-          this.articleView.loadURL(url);
-          this.articleView.show();
-        }
+        this.$electron.ipcRenderer.send('openArticleWindow', url);
 
-      },
-
-      watchForClosedArticleView: function () {
-        var vm = this
-        // console.log(vm.articleView);
-        let windowToHide = vm.articleView
-      console.log(windowToHide);
-        // vm.articleView.on('close', function(event) {
-        //   windowToHide.hide();
-        //   event.preventDefault();
-        //
-        // });
       },
 
       getFocusedWebContents: function () {
@@ -271,18 +228,19 @@
 }
 
 .list-complete-item {
-  transition: all .73s ease;
+  transition: all 1.3s ease-out;
   // display: inline-block;
   // margin-right: 10px;
-  margin: 3em 1em;
+  margin: 1em 3em;
+  width: 200px;
 }
 .list-complete-enter, .list-complete-leave-active {
   opacity: 0;
-  transform: translateY(230px);
+  transform: translateY(100px);
 }
 .list-complete-leave-active {
   position: absolute;
-  // transition: all .6s ease;
+  transition: all .6s ease;
 }
 
 
@@ -304,6 +262,7 @@
     top: 64px;
     padding-bottom: 6.5em;
     background: #4a4a4a;
+    padding-top: 2em;
 
     &::-webkit-scrollbar {
       width: 10px;
@@ -357,7 +316,6 @@
 
     & label {
       color: #1c1b1b;
-      font-weight: 500;
       font-size: 15px;
       font-family: "Roboto";
       letter-spacing: .5px;
@@ -365,6 +323,7 @@
       text-transform: capitalize;
       margin-bottom: -1em;
       cursor: pointer;
+      font-weight: 400;
 
       & input {
         cursor: pointer;

@@ -61,6 +61,10 @@ let config = {
       template: './app/index.ejs',
       title: settings.name
     }),
+    new HtmlWebpackPlugin({
+      filename: 'viewer.html',
+      template: './app/viewer.html'
+    }),
     new webpack.NoErrorsPlugin()
   ],
   output: {

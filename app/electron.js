@@ -4,10 +4,14 @@ const electron = require('electron')
 const path = require('path')
 const app = electron.app
 const BrowserWindow = electron.BrowserWindow
+const ipcMain = electron.ipcMain
 const dialog = require('electron').dialog
 const Store = require('./store.js');
+var force_quit = false;
 
 let mainWindow
+let articleWindow = null
+
 let config = {}
 let authUrl = "http://www.google.com";
 if (process.env.NODE_ENV === 'development') {
@@ -49,7 +53,7 @@ function createWindow () {
   /**
    * Initial window options
    */
-  
+
   mainWindow = new BrowserWindow({
     webPreferences: {webSecurity: false},
     height: 600,
@@ -69,10 +73,16 @@ function createWindow () {
       .catch((err) => console.log('An error occurred: ', err))
   }
   mainWindow.webContents.openDevTools()
-  mainWindow.on('closed', () => {
+  mainWindow.on('closed', (e) => {
     mainWindow = null
   })
-
+  // mainWindow.on('close', function(e){
+  //     if(!force_quit){
+  //         e.preventDefault();
+  //         mainWindow.minimize();
+  //         // mainWindow.show();
+  //     }
+  // });
   mainWindow.on('resize', () => {
     // The event doesn't pass us the window size, so we call the `getBounds` method which returns an object with
     // the height, width, and x and y coordinates.
@@ -97,3 +107,44 @@ app.on('activate', () => {
     createWindow()
   }
 })
+
+app.on('before-quit', () => {
+  console.log('before quit fired');
+  console.log(articleWindow);
+})
+
+ipcMain.on('openArticleWindow', (event, url) => {
+
+
+  if ( articleWindow !== null ) {
+    articleWindow.loadURL(url);
+  } else {
+    var winOptions = { width: 600,
+                       height: 800,
+                       show: false,
+                       x: 1440 - 600,
+                       y: 0,
+                       titleBarStyle: 'hidden-inset',
+                      //  nodeIntegration: false,
+                       webPreferences: {
+                           nodeIntegration: false,
+                           webSecurity: false
+                       }
+                   }
+    articleWindow = new BrowserWindow(winOptions);
+    let webContents = articleWindow.webContents
+    console.log(webContents);
+
+    articleWindow.loadURL(url);
+    console.log(webContents);
+    articleWindow.show();
+    
+  }
+
+
+  articleWindow.on('closed', function(e){
+      articleWindow = null
+  });
+    // Reply on async message from renderer process
+  event.sender.send('async-reply', 2);
+});

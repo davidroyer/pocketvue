@@ -4,7 +4,7 @@
     <md-card class="article_card">
 
 
-      <div class="md-card-link" @click="testEmit(item.resolved_url)">
+      <div class="md-card-link" @click="testEmit(item)">
         <md-card-header>
           <div class="md-title">{{item.resolved_title}}</div>
             <img v-if="item.has_image == true" v-bind:src="item.image.src" alt="" class="article_image"/>
@@ -58,9 +58,10 @@ export default {
   ready() {},
   attached() {},
   methods: {
-    testEmit: function (url) {
-      console.log(url);
-      this.$emit('articleUrlSelected', url)
+    testEmit: function (item) {
+      console.log(item.resolved_id);
+      this.$emit('articleUrlSelected', item.resolved_url)
+
     },
 
     logImage: function () {
@@ -87,10 +88,24 @@ export default {
   &-actions {
     justify-content: flex-end;
     margin-top: auto;
+    display: none !important;
   }
 
   .md-title {
-    font-weight: 500;
+    line-height: 1.2;
+        top: 55px !important;
+        position: relative;
+        font-weight: 400;
+        font-size: 19px;
+  }
+
+  &-header {
+    height: 66px;
+    background: #ddd;
+  }
+
+  &-content {
+    display: none;
   }
 }
 
@@ -98,15 +113,20 @@ export default {
   .article_card {
     // padding: 1em 2em;
     overflow: initial;
-    height: 475px !important;
+    height: 200px;
+    // height: 475px !important;
+    transition: .3s ease;
 
     &:hover {
       cursor: pointer;
+      box-shadow: 0 11px 15px -7px rgba(0,0,0,.2),0 24px 38px 3px rgba(0,0,0,.14),0 9px 46px 8px rgba(0,0,0,.12);
+      transform: scale(1.03);
     }
 
     &-wrapper {
-      max-width: 300px;
-      // margin: 3em 1em;
+      // max-width: 300px;
+      // width: 200px;
+      // margin: 1em 1em;
 
       &:nth-of-type(1), &:nth-of-type(2) {
           // margin-top: 1.75em;
@@ -118,6 +138,13 @@ export default {
       display: block;
       margin-right: auto;
       margin-left: auto;
+
+      position: absolute;
+      max-height: 66px;
+      height: auto;
+      top: 0;
+      left: 0;
+      right: 0;
     }
   }
   img {
@@ -179,5 +206,9 @@ export default {
     display: block;
     background: #dddddd;
     padding: 10px;
+  }
+
+  .md-card-actions {
+    display: none;
   }
 </style>
