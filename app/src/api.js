@@ -1,14 +1,31 @@
 import Vue from 'vue'
 import VueResource from 'vue-resource'
 Vue.use(VueResource)
-var request = require('request')
-Vue.http.headers.common['Content-Type'] = 'application/json'
-Vue.http.options.emulateJSON = true
-Vue.http.options.root = 'https://getpocket.com/v3'
+
+
 var config = require('./pocketApiConfig.js')
 var customActions = {
   getList: {method: 'POST'}
 }
+
+
+// Vue axios
+import axios from 'axios'
+import VueAxios from 'vue-axios'
+Vue.use(VueAxios, axios)
+
+var PocketAPI = axios.create({
+  baseURL: 'https://getpocket.com/v3',
+  headers: {
+		"content-type": "application/json",
+		"X-Accept": "application/json"
+	}
+});
+
+// Vue.axios.get(config.pocketUrl.request).then((response) => {
+//   console.log(response.data)
+// })
+
 
 const Pocket = Vue.resource('get', {}, customActions);
 const articles = Vue.resource('get')
@@ -26,8 +43,6 @@ const configStore = new Store({
   configName: 'user-settings',
 })
 
-console.log(configStore.get('accessToken'));
-
 export const store = {
   state: {
     pocketList: null,
@@ -42,29 +57,31 @@ export const store = {
     webViewUrl: null
   },
 
+  switchToMainView: function () {
+    this.state.isAuthorized = true
+    this.state.loggedIn = true
+    this.state.view = 'LandingPage'
+  }
 	checkForAccessToken: function () {
 
     if (configStore.get('accessToken') !== null) {
-      console.log('check ran');
-      this.state.isAuthorized = true
-      this.state.loggedIn = true
-      this.state.view = 'LandingPage'
+        state.switchToMainView()
     }
-
 	},
 
-	fetchList: function () {
-
-    Pocket.getList({ consumer_key: key, access_token: accessToken, count: "50", detailType: "complete" }).then((response) => {
-      this.state.pocketList = response.data.list
-    })
-  },
-
   addTags: function () {
-    const modify = 'https://getpocket.com/v3/send'
 
     let actions = [ { action: 'tags_add', tags: 'addedfromPocket', item_id: '1435741427' } ]
     actions = JSON.stringify(actions)
+
+    PocketAPI.post('/modify', { actions, consumer_key: key, access_token: accessToken }).then((response) => {
+      console.log(response)
+
+    }).catch((response) =>  {
+      alert(error);
+    });
+
+
 
     Vue.http.post(modify, { actions, consumer_key: key, access_token: accessToken }).then((response) => {
       console.log(response)
@@ -74,78 +91,58 @@ export const store = {
   },
 
   runNodeAuth: function () {
-    // var getRequestToken = function(key, callback) {
-      console.log('runNodeAuth workin');
-    	var options = {
+      PocketAPI.post('/oauth/request', { consumer_key: key, redirect_uri: redirectURL }
 
-    		headers: config.headers,
-    		body: "consumer_key="+key+"&redirect_uri="+redirectURL,
-    		url: config.pocketUrl.request
-    	}
+        ).then(function (response) {
+            store.userAuthorizationApproval(response.data.code)
 
-    	request.post(options, function (error, response, body) {
-          var body = JSON.parse(body)
-          var code = body.code
-          console.log(code);
-
-					store.userAuthorizationApproval(code)
-
-    	});
-    // }
+        }).catch(function (error) {
+            alert(error);
+      })
   },
 
 	userAuthorizationApproval: function (code) {
-		// console.log('ran in callback', code);
-		localStorage.setItem('requestToken', code);
     configStore.set('requestToken', code);
-		var url = 'https://getpocket.com/auth/authorize?request_token='+code+'&redirect_uri='+redirectURL
+		let url = 'https://getpocket.com/auth/authorize?request_token='+code+'&redirect_uri='+redirectURL
+
     this.state.webViewUrl = url
     this.state.showWebView = true
 		// window.open(url);
-
 	},
 
   runGetAccessToken: function () {
-
     let state = this.state
+
     if (configStore.get('accessToken') !== null) {
-      state.isAuthorized = true
-      state.loggedIn = true
-      state.view = 'LandingPage'
+        state.switchToMainView()
 
     } else {
       var requestToken = configStore.get('requestToken')
-      var options = {
-        headers: config.headers,
-        url: config.pocketUrl.authorize,
-        body: "consumer_key="+key+"&code="+requestToken
-      }
 
-      request.post(options, function (error, response, body) {
+      PocketAPI.post('/oauth/authorize', { consumer_key: key, code: requestToken
 
-  			var body = JSON.parse(body)
-        configStore.set('accessToken',  body.access_token)
-        state.isAuthorized = true
-        state.loggedIn = true
-        state.view = 'LandingPage'
-      });
+        }).then(function (response) {
+            configStore.set('accessToken',  response.data.access_token)
+            state.switchToMainView()
+
+        }).catch(function (error) {
+            alert(error);
+      })
     }
 
   },
 
 	fetchPostsFromUserToken: function() {
 		var accessToken = configStore.get('accessToken')
+    let currentState = this.state
 
-		Pocket.getList({ consumer_key: key, access_token: accessToken, count: "150", detailType: "complete" }).then((response) => {
-      this.state.pocketList = response.data.list
-    })
-	},
+    PocketAPI.post('/get', { consumer_key: key, access_token: accessToken, count: "150", detailType: "complete" }).then((response) => {
+      currentState.pocketList = response.data.list
 
-	fetchMyList: function() {
-		var accessToken = localStorage.getItem('myAccessToken');
-		Pocket.getList({ consumer_key: key, access_token: accessToken, count: "150", detailType: "complete" }).then((response) => {
-			this.state.pocketList = response.data.list
-		})
+    }).catch((response) =>  {
+      alert(error);
+    });
+
 	},
 
   resetConfig: function () {

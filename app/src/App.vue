@@ -111,6 +111,9 @@ import LandingPage from './components/LandingPageView'
 import Login from './components/Login'
 import {store} from './api'
 import _ from 'lodash'
+import bus from './bus'
+
+console.log(bus)
 
   export default {
     components: {
@@ -135,6 +138,7 @@ import _ from 'lodash'
     mounted: function () {
       // this.appTags()
       store.checkForAccessToken()
+
     },
 
     computed: {

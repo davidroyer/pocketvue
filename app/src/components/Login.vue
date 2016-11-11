@@ -2,8 +2,9 @@
   <div class="login">
     <h1>Login Area</h1>
     <div class="temp-button-row">
-      <md-button id="get-token" v-if="sharedState.hasAccessToken" class="md-raised md-accent" @click="runLoginProcess">Login</md-button>
+
       <md-button id="authorize-app" v-if="!sharedState.isAuthorized" class="md-raised md-accent" @click="authorizeApp">Connect PocketVue To Your Account</md-button>
+      <md-button id="get-token" v-if="sharedState.hasAccessToken" class="md-raised md-accent" @click="runLoginProcess">Login</md-button>
       <md-button id="config" class="md-raised md-accent" @click="runResetConfigStore">Reset Config Store</md-button>
     </div>
 <!--

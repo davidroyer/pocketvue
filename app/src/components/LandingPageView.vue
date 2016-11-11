@@ -3,7 +3,6 @@
 
     <div class="tag-list">
       <div class="tag-list_wrapper">
-        <button v-on:click="shuffle">Shuffle</button>
         <label>All My Items
           <input type="radio" name="filterValue" value="all" v-model="valueToFilterBy">
         </label>
@@ -23,25 +22,19 @@
 
     <!-- <transition-group name="flip-list" tag="ul">
       <pocket-item v-for="item in this.sharedState.pocketList"
-        @articleUrlSelected="testRemoteWindow"
+        @articleUrlSelected="launchArticleView"
         :item="item"
         :key="item.item_id">
       </pocket-item>
     </transition-group> -->
 
     <transition-group name="list-complete" tag="ul">
-      <pocket-item v-for="item in testFilterByTag"
-        @articleUrlSelected="testRemoteWindow"
+      <pocket-item v-for="item in filterByTag"
+        @articleUrlSelected="launchArticleView"
         :item="item"
         :key="item.item_id">
       </pocket-item>
     </transition-group>
-    <!-- <ul class="list">
-      <pocket-item v-for="item in testFilterByTag"
-        @articleUrlSelected="testRemoteWindow"
-        :item="item">
-      </pocket-item>
-    </ul> -->
 
     <div class="article__wrapper " v-show="showArticle">
       <md-button class="md-icon-button close-article md-raised md-accent" @click="toggleArticleViewer">
@@ -62,8 +55,8 @@
 
   import _ from 'lodash'
   const electron = require('electron')
+  import bus from '../bus'
 
-  // const electronApp = electron.remote.app
 
 
   export default {
@@ -87,10 +80,16 @@
 
     created () {
       this.getList()
+      bus.$on('articleUrlSelected', function () {
+        alert('bus worked from APP Created')
+      }.bind(this))
     },
 
-    mounted () {
+    mounted: function () {
       this.prepareRemoteWindow()
+      bus.$on('articleUrlSelected', function () {
+        alert('bus worked from APP Mounted')
+      }.bind(this))
       // this.watchForClosedArticleView()
     },
 
@@ -127,7 +126,7 @@
         // return _.findKey(list, ['has_video', '0']);
       },
 
-      testFilterByTag: function () {
+      filterByTag: function () {
 
         var pocketList = this.sharedState.pocketList
         var filterByThis = this.valueToFilterBy
@@ -169,11 +168,6 @@
 
     methods: {
 
-      shuffle: function () {
-
-        this.sharedState.pocketList = _.shuffle(this.sharedState.pocketList)
-      },
-
       prepareRemoteWindow: function () {
         let ArticleWindow = this.testWindow
         // let ArticleWindow = this.$electron.remote.BrowserWindow
@@ -190,7 +184,7 @@
         this.articleView = new ArticleWindow(winOptions)
       },
 
-      testRemoteWindow: function (url) {
+      launchArticleView: function (url) {
         if (this.articleView === null) {
           this.prepareRemoteWindow()
           this.articleView.loadURL(url);
@@ -251,10 +245,6 @@
         store.fetchPostsFromUserToken()
       },
 
-      getMyList: function () {
-        store.fetchMyList()
-      },
-
       showWebArticle: function (url) {
         console.log('show is running')
         console.log(url);
@@ -281,18 +271,18 @@
 }
 
 .list-complete-item {
-  transition: all 1.3s ease;
+  transition: all .73s ease;
   // display: inline-block;
   // margin-right: 10px;
   margin: 3em 1em;
 }
 .list-complete-enter, .list-complete-leave-active {
   opacity: 0;
-  transform: translateY(30px);
+  transform: translateY(230px);
 }
 .list-complete-leave-active {
   position: absolute;
-  transition: all .6s ease;
+  // transition: all .6s ease;
 }
 
 
