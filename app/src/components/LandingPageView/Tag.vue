@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import {store} from '../../api'
+import {store} from '../../SharedStore'
 
 export default {
   data() {

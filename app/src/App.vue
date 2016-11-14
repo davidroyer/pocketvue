@@ -10,7 +10,7 @@
 
 
   .content {
-    padding: 30px 15px;
+    padding: 30px;
   }
 
   html,
@@ -72,10 +72,6 @@
   <div v-md-theme="'default'" >
     <div class="header">
       <md-toolbar>
-        <!-- <md-button class="md-icon-button" @click="toggleLeftSidenav">
-          <md-icon>menu</md-icon>
-        </md-button> -->
-
         <h2 class="md-title">PocketVue</h2>
         <md-button class="md-raised md-accent"
           @click="logUserOut">
@@ -85,22 +81,9 @@
     </div>
 
     <div class="content">
-
       <transition name="component-fade" mode="out-in">
         <component v-on:userLoggingIn="logUserIn" v-bind:is="sharedState.view"></component>
       </transition>
-
-    </div>
-
-    <div class="sidebar">
-      <md-sidenav class="md-left" ref="leftSidenav">
-        <md-toolbar class="md-large">
-          <div class="md-toolbar-container">
-            <h3 class="md-title">Sidenav content</h3>
-          </div>
-        </md-toolbar>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nisi cupiditate esse necessitatibus beatae nobis, deserunt ut est fugit, tempora deleniti, eligendi commodi doloribus. Nemo, assumenda possimus, impedit inventore perferendis iusto!</p>
-      </md-sidenav>
     </div>
 
   </div>
@@ -109,11 +92,11 @@
 <script>
 import LandingPage from './components/LandingPageView'
 import Login from './components/Login'
-import {store} from './api'
+import {store} from './SharedStore'
 import _ from 'lodash'
 import bus from './bus'
 
-console.log(bus)
+
 
   export default {
     components: {
@@ -125,41 +108,23 @@ console.log(bus)
       return {
         sharedState: store.state,
         tagsOne: null,
-        // uniqueTagList: Array,
         tagList: null
       }
     },
 
-    created: function () {
-      // store.fetchMyList();
-
-    },
-
     mounted: function () {
-      // this.appTags()
       store.checkForAccessToken()
-
-    },
-
-    computed: {
-
     },
 
     methods: {
       logUserOut: function () {
-        console.log('logout ran');
         this.sharedState.loggedIn = false
-        localStorage.removeItem('requestToken')
         this.sharedState.view = 'Login'
       },
 
       logUserIn: function (token) {
         this.view = 'LandingPage'
         this.sharedState.loggedIn = false
-      },
-
-      toggleLeftSidenav() {
-        this.$refs.leftSidenav.toggle();
       },
 
       setViewToLandingPage: function () {
@@ -174,5 +139,3 @@ console.log(bus)
     }
   }
 </script>
-<!-- <landing-page v-if="sharedState.loggedIn"></landing-page>
-<login v-else></login> -->

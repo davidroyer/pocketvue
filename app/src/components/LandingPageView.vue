@@ -2,31 +2,21 @@
   <div class="landing-page">
 
     <div class="tag-list">
+
       <div class="tag-list_wrapper">
+        <md-button class="md-icon-button add-article md-raised md-accent" @click="addArticle">
+          <md-icon>add</md-icon>
+        </md-button>
         <label>All My Items
           <input type="radio" name="filterValue" value="all" v-model="valueToFilterBy">
         </label>
       </div>
       <div class="tag-list_wrapper" v-for="tag in uniqueTagList">
-        <label>{{tag}}
-          <input type="radio" name="filterValue" :value="tag" v-model="valueToFilterBy">
+        <label>{{tag.tag}}
+          <input type="radio" :id="tag.item_id" name="filterValue" :value="tag.tag" v-model="valueToFilterBy">
         </label>
-        <!-- <label class="cursor">
-          <md-switch v-model="checkedArray" :value="tag" :id="tag" :name="tag"></md-switch>
-          {{tag}}
-        </label> -->
-        <!-- <input type="checkbox" :id="tag" :value="tag" v-model="checkedArray" :name="tag">
-        <label :for="tag">{{tag}}</label> -->
       </div>
     </div>
-
-    <!-- <transition-group name="flip-list" tag="ul">
-      <pocket-item v-for="item in this.sharedState.pocketList"
-        @articleUrlSelected="launchArticleView"
-        :item="item"
-        :key="item.item_id">
-      </pocket-item>
-    </transition-group> -->
 
     <transition-group name="list-complete" tag="ul">
       <pocket-item v-for="item in filterByTag"
@@ -36,21 +26,23 @@
       </pocket-item>
     </transition-group>
 
-    <div class="article__wrapper " v-show="showArticle">
+    <!-- <div class="article__wrapper " v-show="showArticle">
       <md-button class="md-icon-button close-article md-raised md-accent" @click="toggleArticleViewer">
         <md-icon>arrow_back</md-icon>
-            <webview id="articleFrame" src="https://www.github.com/" style="display:inline-flex; width:inherit; height:inherit" ></webview>
       </md-button>
-    </div>
+      <webview id="articleFrame" src="https://getpocket.com/a/queue/" style="display:inline-flex; width:inherit; height:inherit" ></webview>
+    </div> -->
 
   </div>
 </template>
 
 <script>
   const {BrowserWindow, screen, webContents, dialog} = require('electron').remote
+  const ipcRenderer = require('electron')
   const path = require('path')
-  import {store} from '../api'
+  import {store} from '../SharedStore'
   import PocketItem from './LandingPageView/PocketItem'
+  import MultiTest from './MultiTest'
   var request = require('request')
 
   import _ from 'lodash'
@@ -60,7 +52,8 @@
 
   export default {
     components: {
-      PocketItem
+      PocketItem,
+      MultiTest
     },
 
     data () {
@@ -72,7 +65,8 @@
         testWindow: this.$electron.remote.BrowserWindow,
         articleView: null,
         checkedArray: [],
-        mdCheckbox: null
+        mdCheckbox: null,
+        searchQuery: ''
 
       }
     },
@@ -83,20 +77,59 @@
     },
 
     mounted: function () {
+      this.$electron.ipcRenderer.on('factorial-computed', function (event, url) {
+        // console.log(url);
+        store.addArticle(url)
+      })
     },
 
     computed: {
+      queryList: function () {
+        // var vm = this
+        // var pocketList = vm.filterByTag
+        //
+        // return _.filter(pocketList, function(item) {
+        //   return _.includes(item.resolved_title.toLowerCase(), vm.searchQuery.toLowerCase())
+        // })
+      //
+      //   _.debounce(function () {
+      //     return _.filter(pocketList, function(item) {
+      //        return _.includes(item.resolved_title.toLowerCase(), vm.searchQuery.toLowerCase())
+      //     })
+      //   }, 400)
+      },
+
       uniqueTagList: function () {
         var vm = this
         let filteredList =  _.filter(vm.sharedState.pocketList, 'tags')
 
         filteredList =  _.mapValues(filteredList, 'tags')
-
-        filteredList = _.map(filteredList, function(obj) {
-          return _.keysIn(obj)
+        var testIds = _.map(filteredList, function(obj) {
+          return _.valuesIn(obj)
         })
 
-        return _.uniq(_.flatten(filteredList))
+
+
+        var dup = _.flatten(testIds)
+
+        console.log(_.mapValues(dup, 'item_id'));
+        var dup = _.keyBy(dup, 'tag')
+        console.log(dup);
+
+        testIds = _.uniqBy(_.flatten(testIds), 'tag')
+
+        return testIds
+        // filteredList = _.map(filteredList, function(obj) {
+        //   return _.keysIn(obj)
+        // })
+        // // console.log(return _.includes(iteratee, value, index + 1)filteredList);
+        // console.log(_.uniq(_.flatten(filteredList)));
+        // return _.uniq(_.flatten(filteredList))
+      },
+
+      duplicates: function () {
+      var vm = this
+        return _.filter(vm.sharedState.pocketList, _.matchesProperty('tags.tag.vue'))
       },
 
       tags: function () {
@@ -104,6 +137,7 @@
         var list =  this.sharedState.pocketList
             // console.log(users);
             let tagObjects =  _.filter(list, 'tags')
+
             tagObjects = _.mapValues(tagObjects, 'tags');
 
 
@@ -144,7 +178,7 @@
           return 'tags.'+tag;
         }
 
-        var filterByThese = _.map(this.checkedArray, addTags)
+        var filterByThese = _.map(this.valueToFilterBy, addTags)
 
         var arrayofArrays =  _.map(filterByThese, function(tag) {
           return _.filter(pocketList, function(item) {
@@ -159,6 +193,18 @@
     },
 
     methods: {
+
+      addArticle: function () {
+        store.addArticle()
+      },
+
+      windowCommunication: function () {
+        const windowID = BrowserWindow.getFocusedWindow().id
+        mainWindow.webContents.on('did-finish-load', function () {
+          const input = 100
+          mainWindow.webContents.send('compute-factorial', input, windowID)
+        })
+      },
 
       launchArticleView: function (url) {
         this.$electron.ipcRenderer.send('openArticleWindow', url);
@@ -214,6 +260,9 @@
 
       toggleArticleViewer: function () {
         this.showArticle = !this.showArticle
+      },
+
+      handleKeyUp: function () {
       }
     },
 
@@ -229,8 +278,6 @@
 
 .list-complete-item {
   transition: all 1.3s ease-out;
-  // display: inline-block;
-  // margin-right: 10px;
   margin: 1em 3em;
   width: 200px;
 }
@@ -250,7 +297,7 @@
   .list, ul {
     display: inline-flex;
     // width: 70%;
-    left: 250px;
+    left: 200px;
     flex-direction: row;
     flex-wrap: wrap;
     list-style-type: none;
@@ -307,7 +354,7 @@
     top: -33px;
     flex-direction: column;
     position: fixed;
-    width: 250px;
+    width: 200px;
     left: 0;
     overflow-y: auto;
     top: 0;

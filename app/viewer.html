@@ -2,10 +2,78 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Article Viewer</title>
+  <title>Viewer</title>
+  <style media="screen">
+    .controls {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      right: 0;
+      background-color: steelblue;
+      z-index: 999;
+      display: flex;
+    }
+
+    #saveArticle {
+      margin-left: auto;
+      cursor: pointer;
+    }
+
+    .article__wrapper {
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      position: fixed;
+      right: 0;
+      left: 0;
+      top: 65px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Article Viewer</h1>
-  <h2>Some content</h2>
+  <div class="wrapper">
+    <div id="header" class="controls">
+      <button id="saveArticle" type="button" name="button">Save Article</button>
+    </div>
+    <div class="article__wrapper " v-show="showArticle">
+      <!-- <md-button class="md-icon-button close-article md-raised md-accent" @click="toggleArticleViewer">
+        <md-icon>arrow_back</md-icon>
+      </md-button> -->
+      <webview id="articleFrame" src="https://google.com/" style="display:inline-flex; width:inherit; height:inherit" ></webview>
+    </div>
+  </div>
+
 </body>
 </html>
+
+<script type="text/javascript">
+(function () {
+  const {ipcRenderer} = require('electron')
+  const {BrowserWindow, iscreen, webContents, dialog} = require('electron').remote
+  var primaryWindow;
+
+  ipcRenderer.on('compute-factorial', function (event, number, primaryWindowId) {
+
+    primaryWindow = BrowserWindow.fromId(primaryWindowId)
+    console.log(primaryWindow);
+
+    // ipc.sendSync('synchronous-message', 'ping')
+    // primaryWindow.webContents.send('factorial-computed', )
+    // window.close()
+  })
+
+  function handleSave() {
+    let saveButton = document.getElementById('saveArticle');
+    let webView = document.getElementById("articleFrame");
+
+    saveButton.addEventListener('click', function() {
+      primaryWindow.webContents.send('factorial-computed', webView.getURL())
+    })
+  }
+  handleSave();
+
+})();
+
+</script>

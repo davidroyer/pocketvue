@@ -1,21 +1,23 @@
 <template lang="html">
   <div class="login">
-    <h1>Login Area</h1>
-    <div class="temp-button-row">
+    <h1 class="login_title">Get Started With PocketVue</h1>
 
-      <md-button id="authorize-app" v-if="!sharedState.isAuthorized" class="md-raised md-accent" @click="authorizeApp">Connect PocketVue To Your Account</md-button>
-      <md-button id="get-token" v-if="sharedState.hasAccessToken" class="md-raised md-accent" @click="runLoginProcess">Login</md-button>
-      <md-button id="config" class="md-raised md-accent" @click="runResetConfigStore">Reset Config Store</md-button>
+    <transition name="fade" mode="out-in">
+      <md-button id="get-token" v-if="sharedState.isAuthorized" key="login" class="md-raised md-accent" @click="runLoginProcess">Login</md-button>
+
+      <md-button id="authorize-app" v-if="!sharedState.isAuthorized" class="md-raised md-accent" key="authorize" @click="authorizeApp">Connect PocketVue To Your Account</md-button>
+    </transition>
+
+    <div>
+      <md-button id="config" class="md-raised md-accent" v-if="sharedState.isAuthorized" key="config" @click="runResetConfigStore">Reset Config Store</md-button>
     </div>
-<!--
-    <webview id="test" src="https://www.github.com/" style="display:inline-flex; width:100%; height:100vh" disablewebsecurity ></webview> -->
 
     <webview v-show="sharedState.showWebView" id="pocket-test" :src="sharedState.webViewUrl" disablewebsecurity style="display:inline-flex; width:100%; height:100vh" ></webview>
   </div>
 </template>
 
 <script>
-import {store} from '../api'
+import {store} from '../SharedStore'
 
 
 
@@ -33,6 +35,11 @@ export default {
   },
 
   methods: {
+
+    toggleState: function () {
+      console.log('toggle fired');
+      this.sharedState.isAuthorized = !this.sharedState.isAuthorized
+    },
 
     getPocketViewInfo: function () {
       const pocketWebview = document.getElementById('pocket-test')
@@ -73,6 +80,30 @@ export default {
 </script>
 
 <style lang="scss">
+
+  .login {
+    display: flex;
+    justify-content: flex-start;;
+    align-items: center;
+    // height: calc(100vh - 250px);
+    flex-direction: column;
+    text-align: center;
+
+    &_title {
+      font-size: 3em;
+      line-height: 1.3;
+    }
+
+    & > * {
+      margin: 1em 0;
+    }
+  }
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .3s ease;
+  }
+  .fade-enter, .fade-leave-active {
+    opacity: 0;
+  }
   .users {
     padding-left: 0;
     list-style-type: none;

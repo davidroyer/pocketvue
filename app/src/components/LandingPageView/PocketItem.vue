@@ -91,6 +91,9 @@ export default {
     display: none !important;
   }
 
+  &-link {
+    height: 100%;
+  }
   .md-title {
     line-height: 1.2;
         top: 55px !important;
@@ -116,11 +119,13 @@ export default {
     height: 200px;
     // height: 475px !important;
     transition: .3s ease;
+    border: 2px solid transparent;
 
     &:hover {
       cursor: pointer;
       box-shadow: 0 11px 15px -7px rgba(0,0,0,.2),0 24px 38px 3px rgba(0,0,0,.14),0 9px 46px 8px rgba(0,0,0,.12);
       transform: scale(1.03);
+      border: 2px solid #ef3e56;
     }
 
     &-wrapper {

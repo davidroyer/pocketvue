@@ -18,7 +18,7 @@ Vue.use(Resource)
 Vue.config.debug = true
 
 import App from './App'
-import {store} from './api'
+import {store} from './SharedStore'
 /* eslint-disable no-new */
 new Vue({
   data () {
@@ -33,13 +33,11 @@ new Vue({
 
   methods: {
     runTokenCheck: function () {
-      console.log('hi');
       store.checkForAccessToken()
     }
   },
 
   mounted: function () {
-    store.setLocalStorageConfig()
     this.runTokenCheck()
   },
 
