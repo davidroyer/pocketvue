@@ -11,8 +11,10 @@
     <div>
       <md-button id="config" class="md-raised md-accent" v-if="sharedState.isAuthorized" key="config" @click="runResetConfigStore">Reset Config Store</md-button>
     </div>
+    <transition name="fade">
+      <webview v-show="sharedState.showWebView" id="pocket-test" :src="sharedState.webViewUrl" disablewebsecurity style="display:inline-flex; width:100%; height:100vh" ></webview>
+    </transition>
 
-    <webview v-show="sharedState.showWebView" id="pocket-test" :src="sharedState.webViewUrl" disablewebsecurity style="display:inline-flex; width:100%; height:100vh" ></webview>
   </div>
 </template>
 

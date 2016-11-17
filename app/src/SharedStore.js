@@ -9,6 +9,11 @@ const redirectURL = pocketConfig.redirectURL
 
 const userStore = new UserStore({
   configName: 'user-settings',
+  defaults: {
+    requestToken: null,
+    accessToken: null,
+    loggedIn: false
+  }
 })
 
 var PocketAPI = axios.create({

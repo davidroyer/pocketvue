@@ -2,23 +2,19 @@
   <div class="landing-page">
 
     <div class="tag-list">
-
       <div class="tag-list_wrapper">
-        <md-button class="md-icon-button add-article md-raised md-accent" @click="addArticle">
-          <md-icon>add</md-icon>
-        </md-button>
-        <label>All My Items
-          <input type="radio" name="filterValue" value="all" v-model="valueToFilterBy">
+        <label id="allItems">All My Items
+          <input  type="radio" name="filterValue" value="all" v-model="valueToFilterBy">
         </label>
       </div>
       <div class="tag-list_wrapper" v-for="tag in uniqueTagList">
         <label>{{tag.tag}}
-          <input type="radio" :id="tag.item_id" name="filterValue" :value="tag.tag" v-model="valueToFilterBy">
+          <input type="radio" :id="tag.item_id" :name="tag.item_id" :value="tag.tag" v-model="valueToFilterBy">
         </label>
       </div>
     </div>
 
-    <transition-group name="list-complete" tag="ul">
+    <transition-group name="list-complete" tag="ul" mode="out-in">
       <pocket-item v-for="item in filterByTag"
         @articleUrlSelected="launchArticleView"
         :item="item"
@@ -26,61 +22,37 @@
       </pocket-item>
     </transition-group>
 
-    <!-- <div class="article__wrapper " v-show="showArticle">
-      <md-button class="md-icon-button close-article md-raised md-accent" @click="toggleArticleViewer">
-        <md-icon>arrow_back</md-icon>
-      </md-button>
-      <webview id="articleFrame" src="https://getpocket.com/a/queue/" style="display:inline-flex; width:inherit; height:inherit" ></webview>
-    </div> -->
-
   </div>
 </template>
 
 <script>
-  const {BrowserWindow, screen, webContents, dialog} = require('electron').remote
-  const ipcRenderer = require('electron')
+  const electron = require('electron')
+  const {BrowserWindow, screen, webContents, dialog, ipcRenderer} = require('electron').remote
   const path = require('path')
   import {store} from '../SharedStore'
   import PocketItem from './LandingPageView/PocketItem'
-  import MultiTest from './MultiTest'
-  var request = require('request')
-
   import _ from 'lodash'
-  const electron = require('electron')
-  import bus from '../bus'
-
 
   export default {
     components: {
       PocketItem,
-      MultiTest
     },
 
     data () {
       return {
         sharedState: store.state,
-        showArticle: false,
-        currentArticle: null,
-        valueToFilterBy: 'all',
-        testWindow: this.$electron.remote.BrowserWindow,
-        articleView: null,
-        checkedArray: [],
-        mdCheckbox: null,
-        searchQuery: ''
-
+        valueToFilterBy: 'all'
       }
     },
 
     created () {
       this.getList()
-
+      this.$electron.ipcRenderer.on('factorial-computed', function (event, url) {
+        store.addArticle(url)
+      })
     },
 
     mounted: function () {
-      this.$electron.ipcRenderer.on('factorial-computed', function (event, url) {
-        // console.log(url);
-        store.addArticle(url)
-      })
     },
 
     computed: {
@@ -112,12 +84,28 @@
 
         var dup = _.flatten(testIds)
 
-        console.log(_.mapValues(dup, 'item_id'));
+        var reduceTest = _.reduce(dup, function(result, obj) { result[obj.item_id] = obj.tag;
+          return result;
+        }, {});
+      console.log(reduceTest);
+        // console.log(_.mapValues(dup, 'item_id'));
         var dup = _.keyBy(dup, 'tag')
-        console.log(dup);
+        // console.log(dup);
 
-        testIds = _.uniqBy(_.flatten(testIds), 'tag')
+        // var itemTagPair = _.flatten(testIds)
+        // console.log(itemTagPair);
+        // itemTagPair = _.reduce(testIds, function(result, obj) { result[obj.item_id] = obj.tag;
+        //   return result;
+        // }, {});
+        // console.log(itemTagPair);
+        // return testIds
 
+        testIds = _.uniqBy(_.flattenDeep(testIds), 'tag')
+
+        var itemTagPair = _.reduce(testIds, function(result, obj) { result[obj.item_id] = obj.tag;
+          return result;
+        }, {});
+        console.log(itemTagPair);
         return testIds
         // filteredList = _.map(filteredList, function(obj) {
         //   return _.keysIn(obj)
@@ -130,26 +118,6 @@
       duplicates: function () {
       var vm = this
         return _.filter(vm.sharedState.pocketList, _.matchesProperty('tags.tag.vue'))
-      },
-
-      tags: function () {
-
-        var list =  this.sharedState.pocketList
-            // console.log(users);
-            let tagObjects =  _.filter(list, 'tags')
-
-            tagObjects = _.mapValues(tagObjects, 'tags');
-
-
-            // return tagObjects
-            // return _.keysIn(tagObjects)
-            var arrayOfObjectsWithDuplicateTags =  _.valuesIn(tagObjects)
-
-            var uniqueItems = _.uniq(arrayOfObjectsWithDuplicateTags, function(o){ return o.tags.tag; });
-            console.log(uniqueItems);
-            return uniqueItems
-            // return _.flatten(tagObjects)
-        // return _.findKey(list, ['has_video', '0']);
       },
 
       filterByTag: function () {
@@ -223,19 +191,6 @@
         console.log('Windows: ', allWindows);
       },
 
-      toggleLeftSidenav() {
-        this.$refs.leftSidenav.toggle();
-      },
-
-      getArticleContent: function (url) {
-        let $vm = this
-        this.showArticle = true
-        extractor.extractData(url, function (err, data) {
-          // console.log(data.content);
-          $vm.currentArticle = data
-        });
-      },
-
       getRequestToken: function () {
         store.runNodeAuth()
       },
@@ -246,23 +201,6 @@
 
       getList: function () {
         store.fetchPostsFromUserToken()
-      },
-
-      showWebArticle: function (url) {
-        console.log('show is running')
-        console.log(url);
-        const webview = document.getElementById('articleFrame')
-        // console.log(url);
-        webview.src = url
-        this.showArticle = true
-        webview.reload()
-      },
-
-      toggleArticleViewer: function () {
-        this.showArticle = !this.showArticle
-      },
-
-      handleKeyUp: function () {
       }
     },
 
@@ -272,22 +210,34 @@
 
 <style lang="scss">
 
+#allItems {
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 16px;
+}
 .flip-list-move {
   transition: transform 1s;
 }
 
 .list-complete-item {
   transition: all 1.3s ease-out;
-  margin: 1em 3em;
+  margin: 1em;
   width: 200px;
+}
+
+.list-complete-enter {
+    position: absolute;
 }
 .list-complete-enter, .list-complete-leave-active {
   opacity: 0;
-  transform: translateY(100px);
+  transform: translateY(-100%);
+  transition: all .6s ease-in-out;
 }
 .list-complete-leave-active {
   position: absolute;
-  transition: all .6s ease;
+  // transition: all .6s ease;
+    transform: translateY(200%);
+  opacity: 0;
 }
 
 
@@ -305,10 +255,12 @@
     position: fixed;
     right: 0;
     height: 100%;
-    overflow-y: auto;
+    overflow-y: overlay;
     top: 64px;
     padding-bottom: 6.5em;
-    background: #4a4a4a;
+    // background: #4a4a4a;
+    // background: rgba(74, 74, 74, 0.54);
+    background: #6a6a6a;
     padding-top: 2em;
 
     &::-webkit-scrollbar {
@@ -316,15 +268,15 @@
     }
 
     &::-webkit-scrollbar-thumb {
-      background: #404040;
+      background-color: rgb(176, 176, 176)
     }
 
     &::-webkit-scrollbar-track {
-      background: #ddd;
+      background: #404040;
     }
 
     &::-webkit-scrollbar-button {
-      background: #404040;
+      // background: #404040;
       height: 50px;
       border-radius: 50%;
     }
@@ -362,7 +314,7 @@
     padding: 6em 1em 2em 1em;
 
     & label {
-      color: #1c1b1b;
+      color: #3a3a3a;
       font-size: 15px;
       font-family: "Roboto";
       letter-spacing: .5px;
@@ -371,6 +323,18 @@
       margin-bottom: -1em;
       cursor: pointer;
       font-weight: 400;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      // font-size: 17px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: color .15s ease;
+
+      &:hover {
+        cursor: pointer;
+        color: #e91e63;
+      }
 
       & input {
         cursor: pointer;
@@ -378,7 +342,7 @@
     }
 
     &_wrapper {
-      margin: 5px 0;
+      margin: 1em 0;
 
 
     }

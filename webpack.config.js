@@ -63,7 +63,8 @@ let config = {
     }),
     new HtmlWebpackPlugin({
       filename: 'viewer.html',
-      template: './app/viewer.html'
+      template: './app/viewer.html',
+      title: settings.name
     }),
     new webpack.NoErrorsPlugin()
   ],

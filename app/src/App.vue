@@ -32,21 +32,27 @@
 
   .md-toolbar {
     z-index: 9;
-    height: 80px;
+    height: 64px;
     -webkit-app-region: drag;
+    // background-color: #283593 !important;
+    background-color: #363636 !important;
+
 
     & .md-title {
         flex: 1;
         margin-left: 3px;
         margin-top: 15px;
-        font-weight: 700;
-        font-size: 3em;
+        font-weight: 600;
+        font-size: 2.5em;
         letter-spacing: 1px;
         font-family: "Roboto Condensed";
-        font-style: italic;
+        // font-style: italic;
         left: 70px;
         position: relative;
         top: -10px;
+        font-family: -apple-system,BlinkMacSystemFont,sans-serif;
+        color: #f9f9f9;
+        opacity: 0;
       }
   }
   .component-fade-enter-active, .component-fade-leave-active {
@@ -65,15 +71,20 @@
     z-index: 9999999;
     background-color: #fff;
   }
+
+  .logout {
+    background-color: #ef3e56 !important;
+    margin-right: 17px;
+  }
 </style>
 
 <template>
 
-  <div v-md-theme="'default'" >
+  <div v-md-theme="'default'">
     <div class="header">
       <md-toolbar>
         <h2 class="md-title">PocketVue</h2>
-        <md-button class="md-raised md-accent"
+        <md-button class="md-raised md-accent logout"
           @click="logUserOut">
           Logout
         </md-button>
@@ -95,8 +106,6 @@ import Login from './components/Login'
 import {store} from './SharedStore'
 import _ from 'lodash'
 import bus from './bus'
-
-
 
   export default {
     components: {
