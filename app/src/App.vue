@@ -85,6 +85,7 @@
       <md-toolbar>
         <h2 class="md-title">PocketVue</h2>
         <md-button class="md-raised md-accent logout"
+          v-show="sharedState.loggedIn"
           @click="logUserOut">
           Logout
         </md-button>
@@ -105,7 +106,6 @@ import LandingPage from './components/LandingPageView'
 import Login from './components/Login'
 import {store} from './SharedStore'
 import _ from 'lodash'
-import bus from './bus'
 
   export default {
     components: {
@@ -115,9 +115,7 @@ import bus from './bus'
 
     data () {
       return {
-        sharedState: store.state,
-        tagsOne: null,
-        tagList: null
+        sharedState: store.state
       }
     },
 

@@ -56,68 +56,19 @@
     },
 
     computed: {
-      queryList: function () {
-        // var vm = this
-        // var pocketList = vm.filterByTag
-        //
-        // return _.filter(pocketList, function(item) {
-        //   return _.includes(item.resolved_title.toLowerCase(), vm.searchQuery.toLowerCase())
-        // })
-      //
-      //   _.debounce(function () {
-      //     return _.filter(pocketList, function(item) {
-      //        return _.includes(item.resolved_title.toLowerCase(), vm.searchQuery.toLowerCase())
-      //     })
-      //   }, 400)
-      },
-
       uniqueTagList: function () {
         var vm = this
         let filteredList =  _.filter(vm.sharedState.pocketList, 'tags')
 
         filteredList =  _.mapValues(filteredList, 'tags')
-        var testIds = _.map(filteredList, function(obj) {
+        filteredList = _.map(filteredList, function(obj) {
           return _.valuesIn(obj)
         })
 
+        return _.uniqBy(_.flattenDeep(filteredList), 'tag')
 
 
-        var dup = _.flatten(testIds)
 
-        var reduceTest = _.reduce(dup, function(result, obj) { result[obj.item_id] = obj.tag;
-          return result;
-        }, {});
-      console.log(reduceTest);
-        // console.log(_.mapValues(dup, 'item_id'));
-        var dup = _.keyBy(dup, 'tag')
-        // console.log(dup);
-
-        // var itemTagPair = _.flatten(testIds)
-        // console.log(itemTagPair);
-        // itemTagPair = _.reduce(testIds, function(result, obj) { result[obj.item_id] = obj.tag;
-        //   return result;
-        // }, {});
-        // console.log(itemTagPair);
-        // return testIds
-
-        testIds = _.uniqBy(_.flattenDeep(testIds), 'tag')
-
-        var itemTagPair = _.reduce(testIds, function(result, obj) { result[obj.item_id] = obj.tag;
-          return result;
-        }, {});
-        console.log(itemTagPair);
-        return testIds
-        // filteredList = _.map(filteredList, function(obj) {
-        //   return _.keysIn(obj)
-        // })
-        // // console.log(return _.includes(iteratee, value, index + 1)filteredList);
-        // console.log(_.uniq(_.flatten(filteredList)));
-        // return _.uniq(_.flatten(filteredList))
-      },
-
-      duplicates: function () {
-      var vm = this
-        return _.filter(vm.sharedState.pocketList, _.matchesProperty('tags.tag.vue'))
       },
 
       filterByTag: function () {
@@ -128,35 +79,11 @@
         if (filterByThis !== 'all') {
           var filterItem = 'tags.' + filterByThis
           return _.filter(pocketList, function(item) {
-            // return _.includes(item.tags, 'vue');
             return _.has(item, filterItem);
-
           })
         } else {
           return pocketList
         }
-
-      },
-
-      testFilterByMultipleTags: function (tagToFilterBy) {
-
-        var pocketList = this.sharedState.pocketList
-
-        function addTags(tag) {
-          return 'tags.'+tag;
-        }
-
-        var filterByThese = _.map(this.valueToFilterBy, addTags)
-
-        var arrayofArrays =  _.map(filterByThese, function(tag) {
-          return _.filter(pocketList, function(item) {
-            return _.has(item, tag)
-          })
-        })
-
-        return _.reduce(arrayofArrays, function(flattened, other) {
-          return _.uniq(flattened.concat(other));
-        }, []);
       }
     },
 

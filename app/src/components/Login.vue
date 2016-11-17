@@ -83,6 +83,9 @@ export default {
 
 <style lang="scss">
 
+  #get-token, #authorize-app, #config {
+    background-color: #ef3e56 !important;
+  }
   .login {
     display: flex;
     justify-content: flex-start;;

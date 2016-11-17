@@ -5,17 +5,17 @@ const path = require('path')
 const UserStore = require('./UserStore.js')
 const template = [
   {
-    label: 'File',
+    label: 'Window',
     submenu: [
       {
-        label: 'Open...',
-        accelerator: 'CmdOrCtrl+O',
-        click () { openFile() }
+        label: 'Minimize',
+        accelerator: 'CmdOrCtrl+M',
+        role: 'minimize'
       },
       {
-        label: 'Save',
-        accelerator: 'CmdOrCtrl+S',
-        click () { saveFile() }
+        label: 'Close',
+        accelerator: 'CmdOrCtrl+W',
+        role: 'close'
       }
     ]
   },

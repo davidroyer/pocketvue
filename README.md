@@ -1,5 +1,10 @@
-# pocketvue
+# PocketVue
 
+Pocket view is a desktop app for Mac uses electron and [Vue.js](http://vue.js/)
+
+It is still in development. The initial goal was to explore the capabilities of using VUE and electron.
+
+However, the plan is to integrate more robust features that allow for editing and customization of a user's pocket articles.
 > An electron-vue project
 
 ## Build Setup
@@ -17,8 +22,3 @@ npm run build
 # run webpack in production
 npm run pack
 ```
-More information can be found [here](https://simulatedgreg.gitbooks.io/electron-vue/content/docs/npm_scripts.html).
-
----
-
-This project was generated from [electron-vue](https://github.com/SimulatedGREG/electron-vue) using [vue-cli](https://github.com/vuejs/vue-cli). Documentation about this project can be found [here](https://simulatedgreg.gitbooks.io/electron-vue/content/index.html).
