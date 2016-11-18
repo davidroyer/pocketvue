@@ -10,7 +10,7 @@ However, the plan is to integrate more robust features that allow for editing an
 
 Right now, this is for Mac only. You can download the latest version at the [Releases Page](https://github.com/davidroyer/pocketvue/releases)
 
-If you ever want to authorize the app then you can visit the [Connected Services and Applications](https://getpocket.com/connected_applications) page on Pocket's Website and remove access.
+If you ever want to disable remove authorization for PocketVue then you can visit the [Connected Services and Applications](https://getpocket.com/connected_applications) page on Pocket's Website and remove access.
 
 ## Build Setup
 

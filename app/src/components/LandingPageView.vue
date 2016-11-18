@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    <transition-group name="list-complete" tag="ul" mode="out-in">
+    <transition-group name="list-complete" tag="ul" mode="out-in" appear>
       <pocket-item v-for="(item, key, index) in filterByTag"
         @articleUrlSelected="launchArticleView"
         :item="item"
