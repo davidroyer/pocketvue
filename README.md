@@ -2,7 +2,7 @@
 
 
 PocketVue is a desktop app for Mac uses Electron and Vue.js
-
+[[ https://dl.dropboxusercontent.com/u/11825776/TagFiltersTransition-Github.gif | height = 700px ]]
 It is still in development. The initial goal was to explore the capabilities of using VUE and electron.
 
 However, the plan is to integrate more robust features that allow for editing and customization of a user's pocket articles.
