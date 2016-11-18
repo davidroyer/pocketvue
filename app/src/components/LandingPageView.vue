@@ -3,7 +3,7 @@
 
     <div class="tag-list">
       <div class="tag-list_wrapper">
-        <label id="allItems">All My Items
+        <label id="allItems">Recent Items
           <input  type="radio" name="filterValue" value="all" v-model="valueToFilterBy">
         </label>
       </div>
@@ -69,8 +69,13 @@
 
         var fullList = this.sharedState.fullList
         var pocketList = this.sharedState.pocketList
+        var pocketList = _.orderBy(this.sharedState.pocketList, ['sort_id'], ['asc'])
         var filterByThis = this.valueToFilterBy
 
+        // _.sortBy(users, [function(o) { return o.user; }]);
+        // _.sortBy(pocketList, ['user', 'age']);
+
+        // console.log(_.orderBy(pocketList, ['sort_id'], ['asc']))
         if (filterByThis !== 'all') {
           var filterItem = 'tags.' + filterByThis
           return _.filter(pocketList, function(item) {
