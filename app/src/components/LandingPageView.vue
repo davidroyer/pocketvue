@@ -7,7 +7,7 @@
           <input  type="radio" name="filterValue" value="all" v-model="valueToFilterBy">
         </label>
       </div>
-      <div class="tag-list_wrapper" v-for="tag in uniqueTagList">
+      <div class="tag-list_wrapper" v-for="tag, key, index in uniqueTagList">
         <label>{{tag.tag}}
           <input type="radio" :id="tag.item_id" :name="tag.item_id" :value="tag.tag" v-model="valueToFilterBy">
         </label>
@@ -15,10 +15,11 @@
     </div>
 
     <transition-group name="list-complete" tag="ul" mode="out-in">
-      <pocket-item v-for="item in filterByTag"
+      <pocket-item v-for="(item, key, index) in filterByTag"
         @articleUrlSelected="launchArticleView"
         :item="item"
-        :key="item.item_id">
+        :key="item.item_id"
+        :index="index">
       </pocket-item>
     </transition-group>
 
@@ -52,9 +53,6 @@
       })
     },
 
-    mounted: function () {
-    },
-
     computed: {
       uniqueTagList: function () {
         var vm = this
@@ -64,15 +62,12 @@
         filteredList = _.map(filteredList, function(obj) {
           return _.valuesIn(obj)
         })
-
         return _.uniqBy(_.flattenDeep(filteredList), 'tag')
-
-
-
       },
 
       filterByTag: function () {
 
+        var fullList = this.sharedState.fullList
         var pocketList = this.sharedState.pocketList
         var filterByThis = this.valueToFilterBy
 
@@ -103,7 +98,6 @@
 
       launchArticleView: function (url) {
         this.$electron.ipcRenderer.send('openArticleWindow', url);
-
       },
 
       getFocusedWebContents: function () {
@@ -128,6 +122,10 @@
 
       getList: function () {
         store.fetchPostsFromUserToken()
+      },
+
+      getFullList: function () {
+        store.fetchFullList()
       }
     },
 
@@ -173,7 +171,6 @@
   }
   .list, ul {
     display: inline-flex;
-    // width: 70%;
     left: 200px;
     flex-direction: row;
     flex-wrap: wrap;
@@ -189,6 +186,7 @@
     // background: rgba(74, 74, 74, 0.54);
     background: #6a6a6a;
     padding-top: 2em;
+    overflow-x: hidden;
 
     &::-webkit-scrollbar {
       width: 10px;
@@ -270,8 +268,6 @@
 
     &_wrapper {
       margin: 1em 0;
-
-
     }
   }
 

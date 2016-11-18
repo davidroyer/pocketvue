@@ -5,7 +5,7 @@
       <div class="md-card-link" @click="emitUrl(item)">
         <md-card-header>
           <div class="md-title">{{item.resolved_title}}</div>
-            <img v-if="item.has_image == true" v-bind:src="item.image.src" alt="" class="article_image"/>
+            <img v-if="item.has_image == true" v-bind:src="item.image.src"  onerror="this.src='https://upload.wikimedia.org/wikipedia/en/2/2e/Pocket_App_Logo.png'" alt="" class="article_image"/>
             <img v-if="item.has_image == false" src="https://upload.wikimedia.org/wikipedia/en/2/2e/Pocket_App_Logo.png" alt="" class="pocket-logo article_image" />
         </md-card-header>
       </div>
@@ -91,7 +91,7 @@ export default {
 
   .article_card {
     // padding: 1em 2em;
-    overflow: initial;
+    overflow: hidden;
     height: 200px;
     // height: 475px !important;
     transition: .3s ease;

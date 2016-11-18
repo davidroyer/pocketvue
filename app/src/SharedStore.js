@@ -6,6 +6,7 @@ const UserStore = require('../UserStore.js')
 const key = pocketConfig.key
 console.log(key);
 const redirectURL = pocketConfig.redirectURL
+import _ from 'lodash'
 
 const userStore = new UserStore({
   configName: 'user-settings',
@@ -35,7 +36,8 @@ export const store = {
 		loggedIn: false,
     view: 'Login',
     showWebView: false,
-    webViewUrl: null
+    webViewUrl: null,
+    fullList: null
   },
 
   switchToMainView: function () {
@@ -124,6 +126,21 @@ export const store = {
     });
 
 	},
+
+  fetchFullList: function () {
+    var accessToken = userStore.get('accessToken')
+    let currentState = this.state
+
+    PocketAPI.post('/get', { consumer_key: key, access_token: accessToken, detailType: "complete" })
+
+    .then((response) => {
+      currentState.fullList = _.values(response.data.list)
+    })
+
+    .catch((response) =>  {
+      alert(error);
+    });
+  },
 
   resetConfig: function () {
     userStore.nullify('accessToken')

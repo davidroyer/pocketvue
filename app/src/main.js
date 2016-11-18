@@ -12,7 +12,6 @@ Vue.material.theme.register('default', {
   accent: 'pink'
 })
 
-
 Vue.use(Electron)
 Vue.use(Resource)
 Vue.config.debug = true
@@ -28,7 +27,6 @@ new Vue({
   },
 
   created () {
-
   },
 
   methods: {
