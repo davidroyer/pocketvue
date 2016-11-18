@@ -7,7 +7,7 @@
           <input  type="radio" name="filterValue" value="all" v-model="valueToFilterBy">
         </label>
       </div>
-      <div class="tag-list_wrapper" v-for="tag, key, index in uniqueTagList">
+      <div class="tag-list_wrapper" v-for="tag, key, index in completeTagList">
         <label>{{tag.tag}}
           <input type="radio" :id="tag.item_id" :name="tag.item_id" :value="tag.tag" v-model="valueToFilterBy">
         </label>
@@ -51,6 +51,7 @@
       this.$electron.ipcRenderer.on('factorial-computed', function (event, url) {
         store.addArticle(url)
       })
+      store.fetchFullList()
     },
 
     computed: {
@@ -65,17 +66,24 @@
         return _.uniqBy(_.flattenDeep(filteredList), 'tag')
       },
 
-      filterByTag: function () {
+      completeTagList: function () {
+        var vm = this
+        let filteredList =  _.filter(vm.sharedState.fullList, 'tags')
 
-        var fullList = this.sharedState.fullList
-        var pocketList = this.sharedState.pocketList
+        filteredList =  _.mapValues(filteredList, 'tags')
+        filteredList = _.map(filteredList, function(obj) {
+          return _.valuesIn(obj)
+        })
+
+        filteredList = _.uniqBy(_.flattenDeep(filteredList), 'tag')
+        return _.orderBy(filteredList, ['tag'], ['asc'])
+
+      },
+
+      filterByTag: function () {
         var pocketList = _.orderBy(this.sharedState.pocketList, ['sort_id'], ['asc'])
         var filterByThis = this.valueToFilterBy
 
-        // _.sortBy(users, [function(o) { return o.user; }]);
-        // _.sortBy(pocketList, ['user', 'age']);
-
-        // console.log(_.orderBy(pocketList, ['sort_id'], ['asc']))
         if (filterByThis !== 'all') {
           var filterItem = 'tags.' + filterByThis
           return _.filter(pocketList, function(item) {

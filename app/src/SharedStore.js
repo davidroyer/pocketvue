@@ -134,7 +134,7 @@ export const store = {
     PocketAPI.post('/get', { consumer_key: key, access_token: accessToken, detailType: "complete" })
 
     .then((response) => {
-      currentState.fullList = _.values(response.data.list)
+      currentState.fullList = response.data.list
     })
 
     .catch((response) =>  {
