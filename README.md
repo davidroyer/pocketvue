@@ -1,7 +1,7 @@
 <h1>PocketVue  <img src="https://www.dropbox.com/s/vfv49moowofkkb7/PocketVueLogo-Github.png?raw=1" alt="PocketVue Logo" width="75px" height="auto" style="margin-right: 10px; vertical-align: middle;"></h1>
 
 
-PocketVue is a desktop app for Mac uses Electron and Vue.js
+PocketVue is a desktop app for Mac uses Electron and Vue.js 2
 ![Transitions Gif](https://dl.dropboxusercontent.com/u/11825776/TagFiltersTransition-Github.gif)
 
 It is still in development. The initial goal was to explore the capabilities of using VUE and electron.
