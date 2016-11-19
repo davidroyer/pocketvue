@@ -11,8 +11,10 @@
     <div>
       <md-button id="config" class="md-raised md-accent" v-if="sharedState.isAuthorized" key="config" @click="runResetConfigStore">Reset Config Store</md-button>
     </div>
-    <transition name="fade">
-      <webview v-show="sharedState.showWebView" id="pocket-test" :src="sharedState.webViewUrl" disablewebsecurity style="display:inline-flex; width:100%; height:100vh" ></webview>
+    <transition name="slide" appear>
+      <div class="webview-wrapper" v-show="sharedState.showWebView">
+        <webview id="pocket-test" :src="sharedState.webViewUrl"  disablewebsecurity style="display:inline-flex; width:100%; height:100vh" ></webview>
+      </div>
     </transition>
 
   </div>
@@ -49,6 +51,7 @@ export default {
 
       pocketWebview.addEventListener('did-get-redirect-request', (event, oldURL, newURL) => {
         if (event.newURL == 'https://google.com/') {
+          pocketWebview.stop()
           alert('You can login now')
           vm.sharedState.showWebView = false
           store.hasRequestToken()
@@ -82,6 +85,30 @@ export default {
 </script>
 
 <style lang="scss">
+
+
+  body {
+    overflow: hidden;
+  }
+
+  .webview-wrapper {
+    position: fixed;
+    top: 64px;
+    width: 100vw;
+    height: 100vh;
+    left: 0;
+    margin: 0 !important;
+  }
+
+  .slide-enter-active, .slide-leave-active {
+    transition: all 1.2s ease-in-out;
+    opacity: 1;
+  }
+  .slide-enter, .slide-leave-active {
+    opacity: 1;
+    transform: translateX(100%);
+    position: absolute;
+  }
 
   #get-token, #authorize-app, #config {
     background-color: #ef3e56 !important;

@@ -95,7 +95,14 @@
       }
     },
 
+    watch: {
+      valueToFilterBy: 'fetchByTag'
+    }
     methods: {
+
+      fetchByTag: function () {
+
+      },
 
       addArticle: function () {
         store.addArticle()
