@@ -37,7 +37,8 @@ export const store = {
     view: 'Login',
     showWebView: false,
     webViewUrl: null,
-    fullList: null
+    fullList: null,
+    tagFetchResult: null
   },
 
   switchToMainView: function () {
@@ -135,6 +136,21 @@ export const store = {
 
     .then((response) => {
       currentState.fullList = response.data.list
+    })
+
+    .catch((response) =>  {
+      alert(error);
+    });
+  },
+
+  fetchForTag: function (tag) {
+    var accessToken = userStore.get('accessToken')
+    let currentState = this.state
+
+    PocketAPI.post('/get', { consumer_key: key, access_token: accessToken, tag: tag, detailType: "complete" })
+
+    .then((response) => {
+      currentState.tagFetchResult = response.data.list
     })
 
     .catch((response) =>  {

@@ -83,12 +83,14 @@
       filterByTag: function () {
         var pocketList = _.orderBy(this.sharedState.pocketList, ['sort_id'], ['asc'])
         var filterByThis = this.valueToFilterBy
-
+        var tagFetchResult = _.orderBy(this.sharedState.tagFetchResult, ['sort_id'], ['asc'])
+        
         if (filterByThis !== 'all') {
-          var filterItem = 'tags.' + filterByThis
-          return _.filter(pocketList, function(item) {
-            return _.has(item, filterItem);
-          })
+          return this.sharedState.tagFetchResult
+          // var filterItem = 'tags.' + filterByThis
+          // return _.filter(pocketList, function(item) {
+          //   return _.has(item, filterItem);
+          // })
         } else {
           return pocketList
         }
@@ -96,12 +98,12 @@
     },
 
     watch: {
-      valueToFilterBy: 'fetchByTag'
-    }
+      valueToFilterBy: 'filterByTagFetch'
+    },
+
     methods: {
-
-      fetchByTag: function () {
-
+      filterByTagFetch: function () {
+        store.fetchForTag(this.valueToFilterBy)
       },
 
       addArticle: function () {
