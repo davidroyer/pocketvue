@@ -34,7 +34,7 @@
     "file-loader": "^0.8.5",
     "html-webpack-plugin": "^2.16.1",
     "json-loader": "^0.5.4",
-    "node-sass": "^3.10.1",
+    "node-sass": "^4.14.1",
     "sass-loader": "^4.0.2",
     "style-loader": "^0.13.1",
     "tree-kill": "^1.1.0",
